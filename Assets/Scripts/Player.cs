@@ -23,7 +23,6 @@ public class Player : MonoBehaviour
 
     private void OnEnable()
     {
-        // 이동 입력
         if (movementAction == null)
         {
             movementAction = new InputAction("Move", InputActionType.Value);
@@ -34,7 +33,6 @@ public class Player : MonoBehaviour
                 .With("Right", "<Keyboard>/d");
         }
 
-        // 공격 입력
         if (shootAction == null)
         {
             shootAction = new InputAction("Shoot", binding: "<Keyboard>/space");
@@ -78,13 +76,14 @@ public class Player : MonoBehaviour
         spriteRenderer.flipX = mousePos.x < transform.position.x;
     }
 
-    // 🔥 스페이스바 누르면 발사
+    // 🔥 스페이스 누르면 애니메이션만 실행
     private void OnShoot(InputAction.CallbackContext context)
     {
-        Shoot();
+        anim.SetTrigger("Attack");
     }
 
-    void Shoot()
+    // 🔥 이 함수는 Animation Event로 호출됨
+    public void SpawnArrow()
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
         mousePos.z = 0f;
@@ -93,8 +92,5 @@ public class Player : MonoBehaviour
 
         GameObject arrowObj = Instantiate(arrowPrefab, firePoint.position, Quaternion.identity);
         arrowObj.GetComponent<Arrow>().SetDirection(direction);
-
-        // 공격 애니메이션
-        anim.SetTrigger("Attack");
     }
 }

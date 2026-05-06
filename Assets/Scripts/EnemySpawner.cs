@@ -12,7 +12,7 @@ public class EnemySpawner : MonoBehaviour
     public int firstWaveCount = 3;
     public int waveIncrease = 2;
 
-    public int maxEnemies = 20; // ⭐ 추가 (최대 몬스터 수 제한)d
+    public int maxEnemies = 20; // ⭐ 추가 (최대 몬스터 수 제한)
 
     private Camera mainCamera;
     private int currentWave;

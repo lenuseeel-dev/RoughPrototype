@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 817a72f6bd4cd344aa8d37686209584c
+guid: e85dab1b04fc9df4ba5b74612b6e1903
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6425720304170551976
-    second: "ChatGPT Image 2026\uB144 4\uC6D4 28\uC77C \uC624\uD6C4 12_08_37_0"
+      213: 3054613455101831404
+    second: heart_off_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,12 +37,12 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
-    wrapU: 0
-    wrapV: 0
-    wrapW: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 20
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "ChatGPT Image 2026\uB144 4\uC6D4 28\uC77C \uC624\uD6C4 12_08_37_0"
+      name: heart_off_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1672
-        height: 941
+        width: 15
+        height: 14
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 85536e3ad6143d6a0800000000000000
-      internalID: -6425720304170551976
+      spriteID: ce8297dd0ca246a20800000000000000
+      internalID: 3054613455101831404
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      "ChatGPT Image 2026\uB144 4\uC6D4 28\uC77C \uC624\uD6C4 12_08_37_0": -6425720304170551976
+      heart_off_0: 3054613455101831404
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
