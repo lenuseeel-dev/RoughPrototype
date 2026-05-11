@@ -13,6 +13,11 @@ public class GameOverUI : MonoBehaviour
             timeText = GameObject.Find("TimeText")?.GetComponent<TextMeshProUGUI>();
         }
 
+        if (killText == null)
+        {
+            killText = GameObject.Find("KillText")?.GetComponent<TextMeshProUGUI>();
+        }
+
         if (GameManager.instance == null) return;
 
         float time = GameManager.instance.GetPlayTime();

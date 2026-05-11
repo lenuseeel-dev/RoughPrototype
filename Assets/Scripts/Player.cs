@@ -8,12 +8,14 @@ public class Player : MonoBehaviour
     [Header("Shoot")]
     public GameObject arrowPrefab;
     public Transform firePoint;
+    public float attackCooldown = 0.5f;
 
     private InputAction movementAction;
     private InputAction shootAction;
 
     private Animator anim;
     private SpriteRenderer spriteRenderer;
+    private float lastAttackTime;
 
     private void Awake()
     {
@@ -79,7 +81,11 @@ public class Player : MonoBehaviour
     // 🔥 스페이스 누르면 애니메이션만 실행
     private void OnShoot(InputAction.CallbackContext context)
     {
-        anim.SetTrigger("Attack");
+        if (Time.time >= lastAttackTime + attackCooldown)
+        {
+            anim.SetTrigger("Attack");
+            lastAttackTime = Time.time;
+        }
     }
 
     // 🔥 이 함수는 Animation Event로 호출됨

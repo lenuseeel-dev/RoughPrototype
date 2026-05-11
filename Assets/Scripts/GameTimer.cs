@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class GameTimer : MonoBehaviour
@@ -65,6 +66,16 @@ public class GameTimer : MonoBehaviour
 
             if (timerText != null)
                 timerText.text = FormatTime(currentTime);
+
+            if (currentTime >= 120f)
+            {
+                if (GameManager.instance != null)
+                {
+                    GameManager.instance.GameOver();
+                }
+                StopTimer();
+                SceneManager.LoadScene("GameClearScene");
+            }
         }
     }
 
