@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -14,8 +15,8 @@ public class PlayerHealth : MonoBehaviour
     Animator anim;
     SpriteRenderer sr;
 
-    [Header("하트 UI (왼쪽부터 순서대로 넣기)")]
-    public SpriteRenderer[] hearts;   // 3개 넣기
+    [Header("하트 UI")]
+    public SpriteRenderer[] hearts;
     public Sprite heartOn;
     public Sprite heartOff;
 
@@ -52,12 +53,13 @@ public class PlayerHealth : MonoBehaviour
 
     void UpdateHearts()
     {
+        if (hearts == null) return;
+
         for (int i = 0; i < hearts.Length; i++)
         {
-            if (i < currentHealth)
-                hearts[i].sprite = heartOn;
-            else
-                hearts[i].sprite = heartOff;
+            if (hearts[i] == null) continue;
+
+            hearts[i].sprite = (i < currentHealth) ? heartOn : heartOff;
         }
     }
 
@@ -72,12 +74,16 @@ public class PlayerHealth : MonoBehaviour
     {
         anim.SetTrigger("Die");
 
+        // ⭐ 입력 차단용 딜레이
         yield return new WaitForSeconds(1.2f);
 
-        Color c = sr.color;
-        c.a = 0f;
-        sr.color = c;
+        // ⭐ 먼저 타이머/게임 종료 처리
+        if (GameManager.instance != null)
+        {
+            GameManager.instance.GameOver();
+        }
 
-        Time.timeScale = 0f;
+        // ⭐ 씬 이동은 마지막
+        SceneManager.LoadScene("GameOverScene");
     }
 }

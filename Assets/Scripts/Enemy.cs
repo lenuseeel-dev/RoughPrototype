@@ -20,7 +20,7 @@ public class Enemy : MonoBehaviour
     private Animator anim;
     private SpriteRenderer spriteRenderer;
 
-    public Action OnDeath; // ⭐ 스포너 연결용
+    public Action OnDeath;
 
     void Start()
     {
@@ -35,7 +35,6 @@ public class Enemy : MonoBehaviour
 
         Vector3 dirToPlayer = (player.position - transform.position).normalized;
 
-        // 🔥 분리 로직 (오크끼리 안 겹치게)
         Collider2D[] nearby = Physics2D.OverlapCircleAll(transform.position, separationRadius);
         Vector3 separation = Vector3.zero;
 
@@ -57,7 +56,6 @@ public class Enemy : MonoBehaviour
 
         anim.SetBool("isWalk", true);
 
-        // 방향
         spriteRenderer.flipX = player.position.x < transform.position.x;
     }
 
@@ -72,17 +70,18 @@ public class Enemy : MonoBehaviour
         {
             anim.SetTrigger("Attack");
             lastAttackTime = Time.time;
+
+            // 👉 플레이어 데미지
+            collision.GetComponent<PlayerHealth>()?.TakeDamage(1);
         }
     }
 
     void OnTriggerExit2D(Collider2D collision)
     {
         if (!collision.CompareTag("Player")) return;
-
         isAttacking = false;
     }
 
-    // 🔥 화살 맞으면 호출됨
     public void TakeDamage()
     {
         Die();
@@ -90,7 +89,15 @@ public class Enemy : MonoBehaviour
 
     void Die()
     {
-        OnDeath?.Invoke(); // ⭐ 스포너에 알림
+        // ⭐ 핵심: 처치 카운트 증가
+        if (GameManager.instance != null)
+        {
+            GameManager.instance.AddKill();
+        }
+
+        // 스포너 알림
+        OnDeath?.Invoke();
+
         Destroy(gameObject);
     }
 }
