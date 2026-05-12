@@ -502,7 +502,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 275547539}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -10.26}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -510,8 +510,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.27600002, y: 0.47033337}
   m_AnchorMax: {x: 0.47500002, y: 0.5101852}
-  m_AnchoredPosition: {x: -97, y: 0.5}
-  m_SizeDelta: {x: -182, y: 7}
+  m_AnchoredPosition: {x: -85.66498, y: -12.295005}
+  m_SizeDelta: {x: -130.38998, y: 56.849995}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &275547541
 CanvasRenderer:
@@ -747,8 +747,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.27600002, y: 0.39714816}
   m_AnchorMax: {x: 0.48437506, y: 0.4434815}
-  m_AnchoredPosition: {x: -103.5, y: -2}
-  m_SizeDelta: {x: -201, y: 0}
+  m_AnchoredPosition: {x: -90, y: -18}
+  m_SizeDelta: {x: -136.34, y: 45.699993}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &760209690
 GameObject:
@@ -997,6 +997,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   gameTimer: {fileID: 0}
   lastPlayTime: 0
+  bestKillCount: 0
+  isNewBestTime: 0
   killCount: 0
 --- !u!4 &1097404609
 Transform:

@@ -4,11 +4,11 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
-    const string BestTimeKey = "BestTime";
+    const string BestKillCountKey = "BestKillCount";
 
     public GameTimer gameTimer;
     public float lastPlayTime;
-    public float bestTime;
+    public int bestKillCount;
     public bool isNewBestTime;
 
     public int killCount;
@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            bestTime = PlayerPrefs.GetFloat(BestTimeKey, 0f);
+            bestKillCount = PlayerPrefs.GetInt(BestKillCountKey, 0);
             isNewBestTime = false;
             DontDestroyOnLoad(gameObject);
         }
@@ -45,10 +45,10 @@ public class GameManager : MonoBehaviour
             gameTimer.StopTimer();
             lastPlayTime = gameTimer.GetTime();
 
-            if (lastPlayTime > bestTime)
+            if (killCount > bestKillCount)
             {
-                bestTime = lastPlayTime;
-                PlayerPrefs.SetFloat(BestTimeKey, bestTime);
+                bestKillCount = killCount;
+                PlayerPrefs.SetInt(BestKillCountKey, bestKillCount);
                 PlayerPrefs.Save();
                 isNewBestTime = true;
             }
@@ -75,8 +75,8 @@ public class GameManager : MonoBehaviour
         return lastPlayTime;
     }
 
-    public float GetBestTime()
+    public int GetBestKillCount()
     {
-        return bestTime;
+        return bestKillCount;
     }
 }

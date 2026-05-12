@@ -21,13 +21,13 @@ public class GameOverUI : MonoBehaviour
         if (GameManager.instance == null) return;
 
         float time = GameManager.instance.GetPlayTime();
-        float bestTime = GameManager.instance.GetBestTime();
+        int bestKillCount = GameManager.instance.GetBestKillCount();
         int kills = GameManager.instance.killCount;
 
         if (timeText != null)
         {
             timeText.text = "Time Survived: " + FormatTime(time) + "\n" +
-                            "Best Time: " + FormatTime(bestTime);
+                            "Best Kill Count: " + bestKillCount;
 
             if (GameManager.instance.isNewBestTime)
                 timeText.text += "  NEW RECORD!";

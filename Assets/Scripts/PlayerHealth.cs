@@ -38,6 +38,13 @@ public class PlayerHealth : MonoBehaviour
         currentHealth -= damage;
         anim.SetTrigger("Hurt");
 
+        // 카메라 흔들림 효과
+        CameraShake cameraShake = Camera.main?.GetComponent<CameraShake>();
+        if (cameraShake != null)
+        {
+            cameraShake.Shake();
+        }
+
         UpdateHearts();
 
         if (currentHealth <= 0)
