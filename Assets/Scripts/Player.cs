@@ -10,17 +10,24 @@ public class Player : MonoBehaviour
     public Transform firePoint;
     public float attackCooldown = 0.5f;
 
+    [Header("Audio")]
+    public AudioClip arrowShootSound;
+    [Range(0f, 1f)]
+    public float arrowShootVolume = 1f;
+
     private InputAction movementAction;
     private InputAction shootAction;
 
     private Animator anim;
     private SpriteRenderer spriteRenderer;
+    private AudioSource audioSource;
     private float lastAttackTime;
 
     private void Awake()
     {
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void OnEnable()
@@ -98,5 +105,23 @@ public class Player : MonoBehaviour
 
         GameObject arrowObj = Instantiate(arrowPrefab, firePoint.position, Quaternion.identity);
         arrowObj.GetComponent<Arrow>().SetDirection(direction);
+
+        PlayArrowShootSound();
+    }
+
+    private void PlayArrowShootSound()
+    {
+        if (arrowShootSound == null)
+        {
+            return;
+        }
+
+        if (audioSource != null)
+        {
+            audioSource.PlayOneShot(arrowShootSound, arrowShootVolume);
+            return;
+        }
+
+        AudioSource.PlayClipAtPoint(arrowShootSound, firePoint.position, arrowShootVolume);
     }
 }

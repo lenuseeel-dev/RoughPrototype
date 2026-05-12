@@ -4,6 +4,8 @@ using UnityEngine.SceneManagement;
 
 public class PlayerHealth : MonoBehaviour
 {
+    private const string DeathSoundResourcePath = "Sound/PlayerDeathSound";
+
     [Header("체력")]
     public int maxHealth = 3;
     int currentHealth;
@@ -20,6 +22,11 @@ public class PlayerHealth : MonoBehaviour
     public Sprite heartOn;
     public Sprite heartOff;
 
+    [Header("Audio")]
+    public AudioClip deathSound;
+    [Range(0f, 1f)]
+    public float deathSoundVolume = 1f;
+
     bool isDead = false;
 
     void Start()
@@ -27,6 +34,11 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = maxHealth;
         anim = GetComponent<Animator>();
         sr = GetComponent<SpriteRenderer>();
+
+        if (deathSound == null)
+        {
+            deathSound = Resources.Load<AudioClip>(DeathSoundResourcePath);
+        }
 
         UpdateHearts();
     }
@@ -80,6 +92,7 @@ public class PlayerHealth : MonoBehaviour
     IEnumerator DeathSequence()
     {
         anim.SetTrigger("Die");
+        PlayDeathSound();
 
         // ⭐ 입력 차단용 딜레이
         yield return new WaitForSeconds(1.2f);
@@ -92,5 +105,25 @@ public class PlayerHealth : MonoBehaviour
 
         // ⭐ 씬 이동은 마지막
         SceneManager.LoadScene("GameOverScene");
+    }
+
+    void PlayDeathSound()
+    {
+        if (deathSound == null)
+        {
+            Debug.LogWarning($"PlayerHealth: Resources/{DeathSoundResourcePath} 사망 사운드를 찾을 수 없습니다.");
+            return;
+        }
+
+        GameObject soundObject = new GameObject("PlayerDeathSound");
+        DontDestroyOnLoad(soundObject);
+
+        AudioSource audioSource = soundObject.AddComponent<AudioSource>();
+        audioSource.clip = deathSound;
+        audioSource.volume = deathSoundVolume;
+        audioSource.spatialBlend = 0f;
+        audioSource.Play();
+
+        Destroy(soundObject, deathSound.length);
     }
 }

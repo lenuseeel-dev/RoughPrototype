@@ -6,12 +6,19 @@ public class PlayerShoot : MonoBehaviour
     public GameObject arrowPrefab;
     public Transform firePoint;
 
+    [Header("Audio")]
+    public AudioClip arrowShootSound;
+    [Range(0f, 1f)]
+    public float arrowShootVolume = 1f;
+
     private InputAction shootAction;
     private Animator anim;
+    private AudioSource audioSource;
 
     private void Awake()
     {
         anim = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void OnEnable()
@@ -48,8 +55,26 @@ public class PlayerShoot : MonoBehaviour
         Arrow arrow = arrowObj.GetComponent<Arrow>();
         arrow.SetDirection(direction);
 
+        PlayArrowShootSound();
+
         // 공격 애니메이션
         if (anim != null)
             anim.SetTrigger("Attack");
+    }
+
+    private void PlayArrowShootSound()
+    {
+        if (arrowShootSound == null)
+        {
+            return;
+        }
+
+        if (audioSource != null)
+        {
+            audioSource.PlayOneShot(arrowShootSound, arrowShootVolume);
+            return;
+        }
+
+        AudioSource.PlayClipAtPoint(arrowShootSound, firePoint.position, arrowShootVolume);
     }
 }

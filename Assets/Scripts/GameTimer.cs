@@ -4,7 +4,14 @@ using TMPro;
 
 public class GameTimer : MonoBehaviour
 {
+    private const string ClearSoundResourcePath = "Sound/ClearSound";
+
     public TextMeshProUGUI timerText;
+
+    [Header("Audio")]
+    public AudioClip clearSound;
+    [Range(0f, 1f)]
+    public float clearSoundVolume = 1f;
 
     float currentTime;
     bool isRunning;
@@ -19,6 +26,11 @@ public class GameTimer : MonoBehaviour
 
     void Start()
     {
+        if (clearSound == null)
+        {
+            clearSound = Resources.Load<AudioClip>(ClearSoundResourcePath);
+        }
+
         if (timerText == null)
         {
             timerText = GameObject.Find("TimeText")?.GetComponent<TextMeshProUGUI>();
@@ -74,6 +86,7 @@ public class GameTimer : MonoBehaviour
                     GameManager.instance.GameOver();
                 }
                 StopTimer();
+                PlayClearSound();
                 SceneManager.LoadScene("GameClearScene");
             }
         }
@@ -90,5 +103,25 @@ public class GameTimer : MonoBehaviour
         int minutes = totalSeconds / 60;
         int seconds = totalSeconds % 60;
         return $"{minutes:00}:{seconds:00}";
+    }
+
+    void PlayClearSound()
+    {
+        if (clearSound == null)
+        {
+            Debug.LogWarning($"GameTimer: Resources/{ClearSoundResourcePath} clear sound was not found.");
+            return;
+        }
+
+        GameObject soundObject = new GameObject("ClearSound");
+        DontDestroyOnLoad(soundObject);
+
+        AudioSource audioSource = soundObject.AddComponent<AudioSource>();
+        audioSource.clip = clearSound;
+        audioSource.volume = clearSoundVolume;
+        audioSource.spatialBlend = 0f;
+        audioSource.Play();
+
+        Destroy(soundObject, clearSound.length);
     }
 }
