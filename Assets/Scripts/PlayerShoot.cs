@@ -3,6 +3,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerShoot : MonoBehaviour
 {
+    private const string ArrowShootSoundResourcePath = "Sound/BowSound";
+
     public GameObject arrowPrefab;
     public Transform firePoint;
 
@@ -19,6 +21,11 @@ public class PlayerShoot : MonoBehaviour
     {
         anim = GetComponent<Animator>();
         audioSource = GetComponent<AudioSource>();
+
+        if (arrowShootSound == null)
+        {
+            arrowShootSound = Resources.Load<AudioClip>(ArrowShootSoundResourcePath);
+        }
     }
 
     private void OnEnable()
@@ -66,6 +73,7 @@ public class PlayerShoot : MonoBehaviour
     {
         if (arrowShootSound == null)
         {
+            Debug.LogWarning($"PlayerShoot: Resources/{ArrowShootSoundResourcePath} arrow shoot sound was not found.");
             return;
         }
 

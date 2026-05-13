@@ -35,6 +35,9 @@ public class EnemySpawner : MonoBehaviour
 
     void Start()
     {
+        firstWaveCount = GameSettings.FirstWaveOrcCount;
+        waveIncrease = GameSettings.WaveOrcIncrease;
+
         currentWave = 0;
         StartNextWave();
     }
