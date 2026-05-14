@@ -4,8 +4,8 @@ public static class GameSettings
 {
     public const float DefaultMasterVolume = 1f;
     public const int DefaultFirstWaveOrcCount = 3;
-    public const int DefaultWaveOrcIncrease = 2;
-    public const float DefaultTimeBetweenWaves = 5f;
+    public const int DefaultWaveOrcIncrease = 1;
+    public const float DefaultTimeBetweenWaves = 8f;
 
     private const string MasterVolumeKey = "MasterVolume";
     private const string FirstWaveOrcCountKey = "FirstWaveOrcCount";
