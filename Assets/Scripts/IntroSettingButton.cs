@@ -1,16 +1,31 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-public class IntroSettingButton : MonoBehaviour
+[RequireComponent(typeof(RectTransform))]
+public class IntroSettingButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     private const string IntroSceneName = "IntroScene";
     private const string SettingSceneName = "SettingScene";
     private const string SettingButtonName = "SettingButton";
     private const string SettingButtonAssetPath = "Assets/Sprites/SettingButton.png";
+
+    private RectTransform rectTransform;
+    private Vector2 originalSizeDelta;
+
+    private void Awake()
+    {
+        rectTransform = GetComponent<RectTransform>();
+        if (rectTransform != null)
+        {
+            MovePivotToCenterKeepingPosition();
+            originalSizeDelta = rectTransform.sizeDelta;
+        }
+    }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Initialize()
@@ -52,7 +67,7 @@ public class IntroSettingButton : MonoBehaviour
             return;
         }
 
-        Canvas canvas = FindObjectOfType<Canvas>();
+        Canvas canvas = FindFirstObjectByType<Canvas>();
         if (canvas == null)
         {
             return;
@@ -79,9 +94,9 @@ public class IntroSettingButton : MonoBehaviour
         RectTransform rectTransform = buttonObject.GetComponent<RectTransform>();
         rectTransform.anchorMin = new Vector2(1f, 0f);
         rectTransform.anchorMax = new Vector2(1f, 0f);
-        rectTransform.pivot = new Vector2(1f, 0f);
+        rectTransform.pivot = new Vector2(0.5f, 0.5f);
         rectTransform.sizeDelta = new Vector2(180f, 90f);
-        rectTransform.anchoredPosition = new Vector2(-40f, 36f);
+        rectTransform.anchoredPosition = new Vector2(-130f, 81f);
 
         IntroSettingButton introSettingButton = buttonObject.AddComponent<IntroSettingButton>();
         button.onClick.AddListener(introSettingButton.GoToSetting);
@@ -90,5 +105,45 @@ public class IntroSettingButton : MonoBehaviour
     public void GoToSetting()
     {
         SceneManager.LoadScene(SettingSceneName);
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        SetButtonSize(1.1f);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        SetButtonSize(1f);
+    }
+
+    private void SetButtonSize(float scale)
+    {
+        if (rectTransform == null)
+        {
+            return;
+        }
+
+        if (originalSizeDelta == Vector2.zero)
+        {
+            originalSizeDelta = rectTransform.sizeDelta;
+        }
+
+        rectTransform.sizeDelta = originalSizeDelta * scale;
+    }
+
+    private void MovePivotToCenterKeepingPosition()
+    {
+        Vector2 targetPivot = new Vector2(0.5f, 0.5f);
+        if (rectTransform.pivot == targetPivot)
+        {
+            return;
+        }
+
+        Vector2 pivotDelta = targetPivot - rectTransform.pivot;
+        rectTransform.anchoredPosition += new Vector2(
+            pivotDelta.x * rectTransform.sizeDelta.x,
+            pivotDelta.y * rectTransform.sizeDelta.y);
+        rectTransform.pivot = targetPivot;
     }
 }

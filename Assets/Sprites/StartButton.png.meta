@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 664ec8eb08d847b47a1da13c4b1630c4
+guid: de6c1d20a0c544d41bcedab266acb0b2
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2153769790330361117
-    second: dd6af676-d183-4ecc-bdbd-98aae6f0fae0-removebg-preview (1)_0
+      213: 809962627624401481
+    second: 0cd9395e-dbc6-40fd-bc30-aafe24d544a0-removebg-preview (1)_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,17 +96,30 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: dd6af676-d183-4ecc-bdbd-98aae6f0fae0-removebg-preview (1)_0
+      name: 0cd9395e-dbc6-40fd-bc30-aafe24d544a0-removebg-preview (1)_0
       rect:
         serializedVersion: 2
-        x: 79
-        y: 157
-        width: 453
-        height: 127
+        x: 57
+        y: 98
+        width: 593
+        height: 160
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3ea246f69c54c12e0800000000000000
-      internalID: -2153769790330361117
+      spriteID: 94af4ece7b09d3b00800000000000000
+      internalID: 809962627624401481
       vertices: []
       indices: 
       edges: []
@@ -135,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      dd6af676-d183-4ecc-bdbd-98aae6f0fae0-removebg-preview (1)_0: -2153769790330361117
+      0cd9395e-dbc6-40fd-bc30-aafe24d544a0-removebg-preview (1)_0: 809962627624401481
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -6,11 +6,11 @@ public class EnemySpawner : MonoBehaviour
     public float spawnMargin = 0.2f;
     public float spawnZ = 0f;
 
-    public float timeBetweenWaves = 5f;
+    public float timeBetweenWaves = 8f;
     public float enemySpawnDelay = 0.5f;
 
     public int firstWaveCount = 3;
-    public int waveIncrease = 2;
+    public int waveIncrease = 1;
 
     public int maxEnemies = 20; // ⭐ 추가 (최대 몬스터 수 제한)
 
@@ -37,6 +37,7 @@ public class EnemySpawner : MonoBehaviour
     {
         firstWaveCount = GameSettings.FirstWaveOrcCount;
         waveIncrease = GameSettings.WaveOrcIncrease;
+        timeBetweenWaves = GameSettings.TimeBetweenWaves;
 
         currentWave = 0;
         StartNextWave();

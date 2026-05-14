@@ -80,8 +80,26 @@ public class Player : MonoBehaviour
         Vector3 movement = new Vector3(input.x, input.y, 0f);
 
         transform.Translate(movement * speed * Time.deltaTime, Space.World);
+        ClampPositionToCamera();
 
         anim.SetBool("isWalk", input != Vector2.zero);
+    }
+
+    void ClampPositionToCamera()
+    {
+        Camera cam = Camera.main;
+        if (cam == null)
+            return;
+
+        float zDistance = Mathf.Abs(cam.transform.position.z - transform.position.z);
+        Vector3 bottomLeft = cam.ViewportToWorldPoint(new Vector3(0f, 0f, zDistance));
+        Vector3 topRight = cam.ViewportToWorldPoint(new Vector3(1f, 1f, zDistance));
+
+        Vector2 halfSize = spriteRenderer.bounds.extents;
+        Vector3 clampedPos = transform.position;
+        clampedPos.x = Mathf.Clamp(clampedPos.x, bottomLeft.x + halfSize.x, topRight.x - halfSize.x);
+        clampedPos.y = Mathf.Clamp(clampedPos.y, bottomLeft.y + halfSize.y, topRight.y - halfSize.y);
+        transform.position = clampedPos;
     }
 
     void LookAtMouse()

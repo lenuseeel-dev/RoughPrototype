@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Scenes/IntroScene.unity
     guid: cd364c2650092124bb082431092797f4
   - enabled: 1
+    path: Assets/Scenes/SettingScene.unity
+    guid: 0603bc55f4877744381c683f5e6e17aa
+  - enabled: 1
     path: Assets/Scenes/GameOverScene.unity
     guid: be94503c5f8dcf344861c254cb11dd47
   - enabled: 1

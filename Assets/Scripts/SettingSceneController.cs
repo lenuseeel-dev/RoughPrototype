@@ -1,5 +1,7 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -13,6 +15,9 @@ public class SettingSceneController : MonoBehaviour
     public TMP_InputField firstWaveOrcInput;
     public TMP_InputField waveOrcIncreaseInput;
 
+    [Header("Wave")]
+    public TMP_InputField timeBetweenWavesInput;
+
     [Header("Scene")]
     public string introSceneName = "IntroScene";
 
@@ -20,6 +25,7 @@ public class SettingSceneController : MonoBehaviour
 
     private void Start()
     {
+        BuildCanvasUiIfNeeded();
         ValidateUiReferences();
         GameSettings.ApplyMasterVolume();
         RefreshUI();
@@ -58,6 +64,17 @@ public class SettingSceneController : MonoBehaviour
         RefreshInputValues();
     }
 
+    public void OnTimeBetweenWavesChanged(string value)
+    {
+        if (isRefreshing)
+        {
+            return;
+        }
+
+        GameSettings.TimeBetweenWaves = ParseFloat(value, GameSettings.DefaultTimeBetweenWaves, 0.1f);
+        RefreshInputValues();
+    }
+
     public void SaveAndBack()
     {
         SaveCurrentValues();
@@ -85,6 +102,11 @@ public class SettingSceneController : MonoBehaviour
         if (waveOrcIncreaseInput != null)
         {
             GameSettings.WaveOrcIncrease = ParseInt(waveOrcIncreaseInput.text, GameSettings.DefaultWaveOrcIncrease, 0);
+        }
+
+        if (timeBetweenWavesInput != null)
+        {
+            GameSettings.TimeBetweenWaves = ParseFloat(timeBetweenWavesInput.text, GameSettings.DefaultTimeBetweenWaves, 0.1f);
         }
 
         GameSettings.Save();
@@ -118,6 +140,11 @@ public class SettingSceneController : MonoBehaviour
         {
             waveOrcIncreaseInput.text = GameSettings.WaveOrcIncrease.ToString();
         }
+
+        if (timeBetweenWavesInput != null)
+        {
+            timeBetweenWavesInput.text = GameSettings.TimeBetweenWaves.ToString("0.##");
+        }
     }
 
     private void UpdateVolumeText(float value)
@@ -138,12 +165,247 @@ public class SettingSceneController : MonoBehaviour
         return Mathf.Max(minValue, result);
     }
 
+    private float ParseFloat(string value, float fallback, float minValue)
+    {
+        if (!float.TryParse(value, out float result))
+        {
+            result = fallback;
+        }
+
+        return Mathf.Max(minValue, result);
+    }
+
     private void ValidateUiReferences()
     {
-        if (masterVolumeSlider == null || masterVolumeValueText == null || firstWaveOrcInput == null || waveOrcIncreaseInput == null)
+        if (masterVolumeSlider == null || masterVolumeValueText == null || firstWaveOrcInput == null || waveOrcIncreaseInput == null || timeBetweenWavesInput == null)
         {
-            Debug.LogWarning("SettingSceneController: Inspector에 UI 참조를 모두 연결해야 합니다.\n- Master Volume Slider\n- Master Volume Value Text\n- First Wave Orc Input\n- Wave Orc Increase Input");
+            Debug.LogWarning("SettingSceneController: Setting UI references are missing.");
         }
     }
-}
 
+    private void BuildCanvasUiIfNeeded()
+    {
+        if (masterVolumeSlider != null && masterVolumeValueText != null && firstWaveOrcInput != null && waveOrcIncreaseInput != null && timeBetweenWavesInput != null)
+        {
+            return;
+        }
+
+        Canvas canvas = FindFirstObjectByType<Canvas>();
+        if (canvas == null)
+        {
+            GameObject canvasObject = new GameObject("SettingCanvas");
+            canvas = canvasObject.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+
+            CanvasScaler scaler = canvasObject.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920f, 1080f);
+            scaler.matchWidthOrHeight = 0.5f;
+
+            canvasObject.AddComponent<GraphicRaycaster>();
+        }
+
+        if (FindFirstObjectByType<EventSystem>() == null)
+        {
+            GameObject eventSystemObject = new GameObject("EventSystem");
+            eventSystemObject.AddComponent<EventSystem>();
+            eventSystemObject.AddComponent<InputSystemUIInputModule>();
+        }
+
+        CreateBackground(canvas.transform);
+        RectTransform panel = CreatePanel(canvas.transform);
+
+        CreateText(panel, "SETTING", 42, new Vector2(0f, 210f), new Vector2(520f, 60f), TextAlignmentOptions.Center);
+        CreateText(panel, "Master Volume", 24, new Vector2(-150f, 125f), new Vector2(250f, 40f), TextAlignmentOptions.Left);
+        masterVolumeValueText = CreateText(panel, "100%", 22, new Vector2(190f, 125f), new Vector2(100f, 40f), TextAlignmentOptions.Right);
+        masterVolumeSlider = CreateSlider(panel, new Vector2(60f, 83f), new Vector2(360f, 28f));
+
+        CreateText(panel, "First Orcs", 24, new Vector2(-150f, 0f), new Vector2(250f, 42f), TextAlignmentOptions.Left);
+        firstWaveOrcInput = CreateInput(panel, new Vector2(170f, 0f), new Vector2(130f, 46f), TMP_InputField.ContentType.IntegerNumber);
+
+        CreateText(panel, "Orcs Per Wave", 24, new Vector2(-150f, -62f), new Vector2(250f, 42f), TextAlignmentOptions.Left);
+        waveOrcIncreaseInput = CreateInput(panel, new Vector2(170f, -62f), new Vector2(130f, 46f), TMP_InputField.ContentType.IntegerNumber);
+
+        CreateText(panel, "Wave Delay", 24, new Vector2(-150f, -124f), new Vector2(250f, 42f), TextAlignmentOptions.Left);
+        timeBetweenWavesInput = CreateInput(panel, new Vector2(170f, -124f), new Vector2(130f, 46f), TMP_InputField.ContentType.DecimalNumber);
+
+        Button resetButton = CreateButton(panel, "Reset", new Vector2(-100f, -212f), new Vector2(160f, 52f));
+        Button backButton = CreateButton(panel, "Back", new Vector2(100f, -212f), new Vector2(160f, 52f));
+
+        masterVolumeSlider.onValueChanged.AddListener(OnMasterVolumeChanged);
+        firstWaveOrcInput.onEndEdit.AddListener(OnFirstWaveOrcChanged);
+        waveOrcIncreaseInput.onEndEdit.AddListener(OnWaveOrcIncreaseChanged);
+        timeBetweenWavesInput.onEndEdit.AddListener(OnTimeBetweenWavesChanged);
+        resetButton.onClick.AddListener(ResetSettings);
+        backButton.onClick.AddListener(SaveAndBack);
+    }
+
+    private void CreateBackground(Transform parent)
+    {
+        if (parent.Find("SettingBackground") != null)
+        {
+            return;
+        }
+
+        GameObject backgroundObject = new GameObject("SettingBackground");
+        backgroundObject.transform.SetParent(parent, false);
+
+        Image image = backgroundObject.AddComponent<Image>();
+        image.color = Color.white;
+        image.preserveAspect = true;
+
+        RectTransform rectTransform = backgroundObject.GetComponent<RectTransform>();
+        rectTransform.anchorMin = Vector2.zero;
+        rectTransform.anchorMax = Vector2.one;
+        rectTransform.offsetMin = Vector2.zero;
+        rectTransform.offsetMax = Vector2.zero;
+        rectTransform.SetAsFirstSibling();
+    }
+
+    private RectTransform CreatePanel(Transform parent)
+    {
+        Transform existing = parent.Find("SettingPanel");
+        if (existing != null)
+        {
+            DestroyObject(existing.gameObject);
+        }
+
+        GameObject panelObject = new GameObject("SettingPanel");
+        panelObject.transform.SetParent(parent, false);
+
+        Image image = panelObject.AddComponent<Image>();
+        image.color = new Color(0.05f, 0.06f, 0.07f, 0.86f);
+
+        RectTransform rectTransform = panelObject.GetComponent<RectTransform>();
+        rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        rectTransform.pivot = new Vector2(0.5f, 0.5f);
+        rectTransform.sizeDelta = new Vector2(620f, 570f);
+        rectTransform.anchoredPosition = Vector2.zero;
+        return rectTransform;
+    }
+
+    private TMP_Text CreateText(Transform parent, string text, int size, Vector2 position, Vector2 rectSize, TextAlignmentOptions alignment)
+    {
+        GameObject textObject = new GameObject(text);
+        textObject.transform.SetParent(parent, false);
+
+        TextMeshProUGUI textComponent = textObject.AddComponent<TextMeshProUGUI>();
+        textComponent.text = text;
+        textComponent.fontSize = size;
+        textComponent.color = Color.white;
+        textComponent.alignment = alignment;
+        textComponent.raycastTarget = false;
+
+        RectTransform rectTransform = textObject.GetComponent<RectTransform>();
+        rectTransform.sizeDelta = rectSize;
+        rectTransform.anchoredPosition = position;
+        return textComponent;
+    }
+
+    private Slider CreateSlider(Transform parent, Vector2 position, Vector2 size)
+    {
+        GameObject sliderObject = new GameObject("MasterVolumeSlider");
+        sliderObject.transform.SetParent(parent, false);
+
+        RectTransform rectTransform = sliderObject.AddComponent<RectTransform>();
+        rectTransform.sizeDelta = size;
+        rectTransform.anchoredPosition = position;
+
+        Slider slider = sliderObject.AddComponent<Slider>();
+        slider.minValue = 0f;
+        slider.maxValue = 1f;
+
+        CreateSliderImage(sliderObject.transform, "Background", new Color(0.16f, 0.16f, 0.16f, 1f), size, true);
+        RectTransform fillArea = CreateSliderContainer(sliderObject.transform, "Fill Area");
+        RectTransform fill = CreateSliderImage(fillArea, "Fill", new Color(0.25f, 0.75f, 0.48f, 1f), size, true);
+        RectTransform handleArea = CreateSliderContainer(sliderObject.transform, "Handle Slide Area");
+        RectTransform handle = CreateSliderImage(handleArea, "Handle", Color.white, new Vector2(28f, 28f), false);
+
+        slider.fillRect = fill;
+        slider.handleRect = handle;
+        slider.targetGraphic = handle.GetComponent<Image>();
+        return slider;
+    }
+
+    private RectTransform CreateSliderContainer(Transform parent, string objectName)
+    {
+        GameObject containerObject = new GameObject(objectName);
+        containerObject.transform.SetParent(parent, false);
+
+        RectTransform rectTransform = containerObject.AddComponent<RectTransform>();
+        rectTransform.anchorMin = Vector2.zero;
+        rectTransform.anchorMax = Vector2.one;
+        rectTransform.offsetMin = Vector2.zero;
+        rectTransform.offsetMax = Vector2.zero;
+        return rectTransform;
+    }
+
+    private RectTransform CreateSliderImage(Transform parent, string objectName, Color color, Vector2 size, bool stretch)
+    {
+        GameObject imageObject = new GameObject(objectName);
+        imageObject.transform.SetParent(parent, false);
+
+        Image image = imageObject.AddComponent<Image>();
+        image.color = color;
+
+        RectTransform rectTransform = imageObject.GetComponent<RectTransform>();
+        rectTransform.anchorMin = stretch ? new Vector2(0f, 0.5f) : new Vector2(0.5f, 0.5f);
+        rectTransform.anchorMax = stretch ? new Vector2(1f, 0.5f) : new Vector2(0.5f, 0.5f);
+        rectTransform.sizeDelta = stretch ? new Vector2(0f, size.y) : size;
+        rectTransform.anchoredPosition = Vector2.zero;
+        return rectTransform;
+    }
+
+    private TMP_InputField CreateInput(Transform parent, Vector2 position, Vector2 size, TMP_InputField.ContentType contentType)
+    {
+        GameObject inputObject = new GameObject("NumberInput");
+        inputObject.transform.SetParent(parent, false);
+
+        Image image = inputObject.AddComponent<Image>();
+        image.color = new Color(1f, 1f, 1f, 0.94f);
+
+        TMP_InputField input = inputObject.AddComponent<TMP_InputField>();
+        input.contentType = contentType;
+        input.targetGraphic = image;
+
+        RectTransform rectTransform = inputObject.GetComponent<RectTransform>();
+        rectTransform.sizeDelta = size;
+        rectTransform.anchoredPosition = position;
+
+        TMP_Text text = CreateText(inputObject.transform, "Text", 24, Vector2.zero, new Vector2(size.x - 16f, size.y - 8f), TextAlignmentOptions.Center);
+        text.color = Color.black;
+        input.textComponent = text;
+        return input;
+    }
+
+    private Button CreateButton(Transform parent, string label, Vector2 position, Vector2 size)
+    {
+        GameObject buttonObject = new GameObject(label + "Button");
+        buttonObject.transform.SetParent(parent, false);
+
+        Image image = buttonObject.AddComponent<Image>();
+        image.color = new Color(0.25f, 0.75f, 0.48f, 1f);
+
+        Button button = buttonObject.AddComponent<Button>();
+        button.targetGraphic = image;
+
+        RectTransform rectTransform = buttonObject.GetComponent<RectTransform>();
+        rectTransform.sizeDelta = size;
+        rectTransform.anchoredPosition = position;
+
+        CreateText(buttonObject.transform, label, 24, Vector2.zero, size, TextAlignmentOptions.Center);
+        return button;
+    }
+
+    private void DestroyObject(GameObject target)
+    {
+        if (Application.isPlaying)
+        {
+            Destroy(target);
+            return;
+        }
+
+        DestroyImmediate(target);
+    }
+}
