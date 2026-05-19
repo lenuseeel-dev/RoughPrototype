@@ -36,6 +36,14 @@ public class GameManager : MonoBehaviour
     public void AddKill()
     {
         killCount++;
+
+        if (killCount > bestKillCount)
+        {
+            bestKillCount = killCount;
+            PlayerPrefs.SetInt(BestKillCountKey, bestKillCount);
+            PlayerPrefs.Save();
+            isNewBestTime = true;
+        }
     }
 
     public void GameOver()
@@ -44,18 +52,6 @@ public class GameManager : MonoBehaviour
         {
             gameTimer.StopTimer();
             lastPlayTime = gameTimer.GetTime();
-
-            if (killCount > bestKillCount)
-            {
-                bestKillCount = killCount;
-                PlayerPrefs.SetInt(BestKillCountKey, bestKillCount);
-                PlayerPrefs.Save();
-                isNewBestTime = true;
-            }
-            else
-            {
-                isNewBestTime = false;
-            }
         }
     }
 

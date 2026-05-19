@@ -1,8 +1,12 @@
 using UnityEngine;
 using System;
+using System.Collections;
 
 public class Enemy : MonoBehaviour
 {
+    private static readonly int IsWalkHash = Animator.StringToHash("isWalk");
+    private static readonly int OrcAttackHash = Animator.StringToHash("OrcAttack");
+
     [Header("Movement")]
     public float speed = 3f;
 
@@ -13,8 +17,9 @@ public class Enemy : MonoBehaviour
     public float separationRadius = 1.2f;
     public float separationForce = 2f;
 
-    private float lastAttackTime;
     private bool isAttacking;
+    private Coroutine attackRoutine;
+    private PlayerHealth attackTarget;
 
     private Transform player;
     private Animator anim;
@@ -54,31 +59,52 @@ public class Enemy : MonoBehaviour
 
         transform.position += finalDir * speed * Time.deltaTime;
 
-        anim.SetBool("isWalk", true);
+        anim.SetBool(IsWalkHash, true);
 
         spriteRenderer.flipX = player.position.x < transform.position.x;
     }
 
-    void OnTriggerStay2D(Collider2D collision)
+    void OnTriggerEnter2D(Collider2D collision)
     {
         if (!collision.CompareTag("Player")) return;
 
-        isAttacking = true;
-        anim.SetBool("isWalk", false);
+        attackTarget = collision.GetComponent<PlayerHealth>();
 
-        if (Time.time >= lastAttackTime + attackCooldown)
+        if (attackRoutine == null)
         {
-            anim.SetTrigger("Attack");
-            lastAttackTime = Time.time;
-
-            // 👉 플레이어 데미지
-            collision.GetComponent<PlayerHealth>()?.TakeDamage(1);
+            attackRoutine = StartCoroutine(AttackLoop());
         }
+    }
+
+    IEnumerator AttackLoop()
+    {
+        isAttacking = true;
+        anim.SetBool(IsWalkHash, false);
+
+        while (attackTarget != null)
+        {
+            anim.Play(OrcAttackHash, 0, 0f);
+            attackTarget.TakeDamage(1);
+
+            yield return new WaitForSeconds(attackCooldown);
+        }
+
+        isAttacking = false;
+        attackRoutine = null;
     }
 
     void OnTriggerExit2D(Collider2D collision)
     {
         if (!collision.CompareTag("Player")) return;
+
+        attackTarget = null;
+
+        if (attackRoutine != null)
+        {
+            StopCoroutine(attackRoutine);
+            attackRoutine = null;
+        }
+
         isAttacking = false;
     }
 
@@ -89,13 +115,11 @@ public class Enemy : MonoBehaviour
 
     void Die()
     {
-        // ⭐ 핵심: 처치 카운트 증가
         if (GameManager.instance != null)
         {
             GameManager.instance.AddKill();
         }
 
-        // 스포너 알림
         OnDeath?.Invoke();
 
         Destroy(gameObject);

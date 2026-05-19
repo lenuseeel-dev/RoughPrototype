@@ -18,6 +18,9 @@ public class SettingSceneController : MonoBehaviour
     [Header("Wave")]
     public TMP_InputField timeBetweenWavesInput;
 
+    [Header("Clear")]
+    public TMP_InputField clearSurvivalTimeInput;
+
     [Header("Scene")]
     public string introSceneName = "IntroScene";
 
@@ -75,6 +78,17 @@ public class SettingSceneController : MonoBehaviour
         RefreshInputValues();
     }
 
+    public void OnClearSurvivalTimeChanged(string value)
+    {
+        if (isRefreshing)
+        {
+            return;
+        }
+
+        GameSettings.ClearSurvivalTime = ParseFloat(value, GameSettings.DefaultClearSurvivalTime, 1f);
+        RefreshInputValues();
+    }
+
     public void SaveAndBack()
     {
         SaveCurrentValues();
@@ -107,6 +121,11 @@ public class SettingSceneController : MonoBehaviour
         if (timeBetweenWavesInput != null)
         {
             GameSettings.TimeBetweenWaves = ParseFloat(timeBetweenWavesInput.text, GameSettings.DefaultTimeBetweenWaves, 0.1f);
+        }
+
+        if (clearSurvivalTimeInput != null)
+        {
+            GameSettings.ClearSurvivalTime = ParseFloat(clearSurvivalTimeInput.text, GameSettings.DefaultClearSurvivalTime, 1f);
         }
 
         GameSettings.Save();
@@ -145,6 +164,11 @@ public class SettingSceneController : MonoBehaviour
         {
             timeBetweenWavesInput.text = GameSettings.TimeBetweenWaves.ToString("0.##");
         }
+
+        if (clearSurvivalTimeInput != null)
+        {
+            clearSurvivalTimeInput.text = GameSettings.ClearSurvivalTime.ToString("0.##");
+        }
     }
 
     private void UpdateVolumeText(float value)
@@ -177,7 +201,7 @@ public class SettingSceneController : MonoBehaviour
 
     private void ValidateUiReferences()
     {
-        if (masterVolumeSlider == null || masterVolumeValueText == null || firstWaveOrcInput == null || waveOrcIncreaseInput == null || timeBetweenWavesInput == null)
+        if (masterVolumeSlider == null || masterVolumeValueText == null || firstWaveOrcInput == null || waveOrcIncreaseInput == null || timeBetweenWavesInput == null || clearSurvivalTimeInput == null)
         {
             Debug.LogWarning("SettingSceneController: Setting UI references are missing.");
         }
@@ -185,7 +209,7 @@ public class SettingSceneController : MonoBehaviour
 
     private void BuildCanvasUiIfNeeded()
     {
-        if (masterVolumeSlider != null && masterVolumeValueText != null && firstWaveOrcInput != null && waveOrcIncreaseInput != null && timeBetweenWavesInput != null)
+        if (masterVolumeSlider != null && masterVolumeValueText != null && firstWaveOrcInput != null && waveOrcIncreaseInput != null && timeBetweenWavesInput != null && clearSurvivalTimeInput != null)
         {
             return;
         }
@@ -215,27 +239,31 @@ public class SettingSceneController : MonoBehaviour
         CreateBackground(canvas.transform);
         RectTransform panel = CreatePanel(canvas.transform);
 
-        CreateText(panel, "SETTING", 42, new Vector2(0f, 210f), new Vector2(520f, 60f), TextAlignmentOptions.Center);
-        CreateText(panel, "Master Volume", 24, new Vector2(-150f, 125f), new Vector2(250f, 40f), TextAlignmentOptions.Left);
-        masterVolumeValueText = CreateText(panel, "100%", 22, new Vector2(190f, 125f), new Vector2(100f, 40f), TextAlignmentOptions.Right);
-        masterVolumeSlider = CreateSlider(panel, new Vector2(60f, 83f), new Vector2(360f, 28f));
+        CreateText(panel, "SETTING", 42, new Vector2(0f, 230f), new Vector2(520f, 60f), TextAlignmentOptions.Center);
+        CreateText(panel, "Master Volume", 24, new Vector2(-150f, 145f), new Vector2(250f, 40f), TextAlignmentOptions.Left);
+        masterVolumeValueText = CreateText(panel, "100%", 22, new Vector2(190f, 145f), new Vector2(100f, 40f), TextAlignmentOptions.Right);
+        masterVolumeSlider = CreateSlider(panel, new Vector2(60f, 103f), new Vector2(360f, 28f));
 
-        CreateText(panel, "First Orcs", 24, new Vector2(-150f, 0f), new Vector2(250f, 42f), TextAlignmentOptions.Left);
-        firstWaveOrcInput = CreateInput(panel, new Vector2(170f, 0f), new Vector2(130f, 46f), TMP_InputField.ContentType.IntegerNumber);
+        CreateText(panel, "First Orcs", 24, new Vector2(-150f, 20f), new Vector2(250f, 42f), TextAlignmentOptions.Left);
+        firstWaveOrcInput = CreateInput(panel, new Vector2(170f, 20f), new Vector2(130f, 46f), TMP_InputField.ContentType.IntegerNumber);
 
-        CreateText(panel, "Orcs Per Wave", 24, new Vector2(-150f, -62f), new Vector2(250f, 42f), TextAlignmentOptions.Left);
-        waveOrcIncreaseInput = CreateInput(panel, new Vector2(170f, -62f), new Vector2(130f, 46f), TMP_InputField.ContentType.IntegerNumber);
+        CreateText(panel, "Orcs Per Wave", 24, new Vector2(-150f, -42f), new Vector2(250f, 42f), TextAlignmentOptions.Left);
+        waveOrcIncreaseInput = CreateInput(panel, new Vector2(170f, -42f), new Vector2(130f, 46f), TMP_InputField.ContentType.IntegerNumber);
 
-        CreateText(panel, "Wave Delay", 24, new Vector2(-150f, -124f), new Vector2(250f, 42f), TextAlignmentOptions.Left);
-        timeBetweenWavesInput = CreateInput(panel, new Vector2(170f, -124f), new Vector2(130f, 46f), TMP_InputField.ContentType.DecimalNumber);
+        CreateText(panel, "Wave Delay", 24, new Vector2(-150f, -104f), new Vector2(250f, 42f), TextAlignmentOptions.Left);
+        timeBetweenWavesInput = CreateInput(panel, new Vector2(170f, -104f), new Vector2(130f, 46f), TMP_InputField.ContentType.DecimalNumber);
 
-        Button resetButton = CreateButton(panel, "Reset", new Vector2(-100f, -212f), new Vector2(160f, 52f));
-        Button backButton = CreateButton(panel, "Back", new Vector2(100f, -212f), new Vector2(160f, 52f));
+        CreateText(panel, "Clear Time (s)", 24, new Vector2(-150f, -166f), new Vector2(250f, 42f), TextAlignmentOptions.Left);
+        clearSurvivalTimeInput = CreateInput(panel, new Vector2(170f, -166f), new Vector2(130f, 46f), TMP_InputField.ContentType.DecimalNumber);
+
+        Button resetButton = CreateButton(panel, "Reset", new Vector2(-100f, -238f), new Vector2(160f, 52f));
+        Button backButton = CreateButton(panel, "Back", new Vector2(100f, -238f), new Vector2(160f, 52f));
 
         masterVolumeSlider.onValueChanged.AddListener(OnMasterVolumeChanged);
         firstWaveOrcInput.onEndEdit.AddListener(OnFirstWaveOrcChanged);
         waveOrcIncreaseInput.onEndEdit.AddListener(OnWaveOrcIncreaseChanged);
         timeBetweenWavesInput.onEndEdit.AddListener(OnTimeBetweenWavesChanged);
+        clearSurvivalTimeInput.onEndEdit.AddListener(OnClearSurvivalTimeChanged);
         resetButton.onClick.AddListener(ResetSettings);
         backButton.onClick.AddListener(SaveAndBack);
     }

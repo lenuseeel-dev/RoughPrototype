@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-using UnityEngine.SceneManagement;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -104,7 +103,7 @@ public class PlayerHealth : MonoBehaviour
         }
 
         // ⭐ 씬 이동은 마지막
-        SceneManager.LoadScene("GameOverScene");
+        SceneFader.LoadScene("GameOverScene");
     }
 
     void PlayDeathSound()

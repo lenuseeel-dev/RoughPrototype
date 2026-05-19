@@ -6,11 +6,13 @@ public static class GameSettings
     public const int DefaultFirstWaveOrcCount = 3;
     public const int DefaultWaveOrcIncrease = 1;
     public const float DefaultTimeBetweenWaves = 8f;
+    public const float DefaultClearSurvivalTime = 120f;
 
     private const string MasterVolumeKey = "MasterVolume";
     private const string FirstWaveOrcCountKey = "FirstWaveOrcCount";
     private const string WaveOrcIncreaseKey = "WaveOrcIncrease";
     private const string TimeBetweenWavesKey = "TimeBetweenWaves";
+    private const string ClearSurvivalTimeKey = "ClearSurvivalTime";
 
     public static float MasterVolume
     {
@@ -40,6 +42,12 @@ public static class GameSettings
         set => PlayerPrefs.SetFloat(TimeBetweenWavesKey, Mathf.Max(0.1f, value));
     }
 
+    public static float ClearSurvivalTime
+    {
+        get => PlayerPrefs.GetFloat(ClearSurvivalTimeKey, DefaultClearSurvivalTime);
+        set => PlayerPrefs.SetFloat(ClearSurvivalTimeKey, Mathf.Max(1f, value));
+    }
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Initialize()
     {
@@ -62,6 +70,7 @@ public static class GameSettings
         FirstWaveOrcCount = DefaultFirstWaveOrcCount;
         WaveOrcIncrease = DefaultWaveOrcIncrease;
         TimeBetweenWaves = DefaultTimeBetweenWaves;
+        ClearSurvivalTime = DefaultClearSurvivalTime;
         Save();
     }
 }

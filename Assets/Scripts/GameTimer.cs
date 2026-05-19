@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using TMPro;
 
 public class GameTimer : MonoBehaviour
@@ -79,7 +78,7 @@ public class GameTimer : MonoBehaviour
             if (timerText != null)
                 timerText.text = FormatTime(currentTime);
 
-            if (currentTime >= 120f)
+            if (currentTime >= GameSettings.ClearSurvivalTime)
             {
                 if (GameManager.instance != null)
                 {
@@ -87,7 +86,7 @@ public class GameTimer : MonoBehaviour
                 }
                 StopTimer();
                 PlayClearSound();
-                SceneManager.LoadScene("GameClearScene");
+                SceneFader.LoadScene("GameClearScene");
             }
         }
     }
